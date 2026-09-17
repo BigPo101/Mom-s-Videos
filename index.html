@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Mom's Videos</title>
+
+<!-- iPhone "Add to Home Screen" behavior -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mom's Videos">
+<meta name="theme-color" content="#211D1A">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='36' fill='%23211D1A'/%3E%3Ccircle cx='90' cy='90' r='52' fill='none' stroke='%23C98A4B' stroke-width='7'/%3E%3Ccircle cx='90' cy='90' r='10' fill='%23C98A4B'/%3E%3Ccircle cx='90' cy='50' r='9' fill='%23C98A4B'/%3E%3Ccircle cx='122' cy='108' r='9' fill='%23C98A4B'/%3E%3Ccircle cx='58' cy='108' r='9' fill='%23C98A4B'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%23C98A4B' stroke-width='2.5'/%3E%3Ccircle cx='16' cy='16' r='2.5' fill='%23C98A4B'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<style>
+  :root{
+    --bg:#211D1A;
+    --bg-elevated:#2B2521;
+    --bg-elevated-2:#332B25;
+    --ink:#EFE7DA;
+    --ink-soft:#A99C8C;
+    --accent:#C98A4B;
+    --accent-soft:#7A5C3E;
+    --line:#3A332D;
+    --danger:#B5573D;
+    --success:#7C9473;
+    --serif:'Newsreader', Georgia, 'Times New Roman', serif;
+    --sans:'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    overscroll-behavior-y:none;
+  }
+  #app{
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    padding-bottom:96px;
+    position:relative;
+  }
+  a,button{font-family:inherit;}
+  button{cursor:pointer;}
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    padding:28px 20px 18px;
+    border-bottom:1px solid var(--line);
+  }
+  .wordmark{
+    font-family:var(--serif);
+    font-style:italic;
+    font-weight:500;
+    font-size:26px;
+    letter-spacing:0.2px;
+  }
+  .account-chip{
+    font-size:12px;
+    color:var(--ink-soft);
+    background:none;
+    border:none;
+    padding:0;
+    text-decoration:underline;
+    text-underline-offset:3px;
+    text-decoration-color:var(--line);
+  }
+
+  /* ---------- Connect screen ---------- */
+  .hero{
+    padding:18vh 28px 40px;
+    text-align:center;
+  }
+  .hero-ring{
+    width:64px;height:64px;margin:0 auto 28px;
+    border-radius:50%;
+    border:2px solid var(--accent);
+    position:relative;
+  }
+  .hero-ring::before{
+    content:"";
+    position:absolute;inset:14px;
+    border-radius:50%;
+    background:var(--accent);
+  }
+  .hero h1{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:30px;
+    line-height:1.25;
+    margin:0 0 14px;
+  }
+  .hero p{
+    color:var(--ink-soft);
+    font-size:15px;
+    line-height:1.6;
+    max-width:320px;
+    margin:0 auto 32px;
+  }
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    background:var(--accent);
+    color:#211D1A;
+    font-weight:600;
+    font-size:15px;
+    border:none;
+    border-radius:10px;
+    padding:14px 22px;
+    min-height:48px;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn-ghost{
+    background:none;
+    border:1px solid var(--line);
+    color:var(--ink);
+  }
+  .btn-block{width:100%;}
+  .btn[disabled]{opacity:0.55;}
+
+  .status-line{
+    margin-top:18px;
+    font-size:13px;
+    color:var(--ink-soft);
+    min-height:18px;
+  }
+  .status-line.error{color:var(--danger);}
+
+  /* ---------- Category grid (home) ---------- */
+  .section-pad{padding:20px 20px 4px;}
+  .eyebrow-none{margin-bottom:10px;} /* spacing helper, no label styling */
+  .cat-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    padding:0 20px 20px;
+  }
+  .cat-card{
+    background:var(--bg-elevated);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:18px 16px;
+    text-align:left;
+    color:var(--ink);
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+    min-height:108px;
+    position:relative;
+    overflow:hidden;
+  }
+  .cat-card::before{
+    content:"";
+    position:absolute;
+    left:0;top:0;bottom:0;
+    width:5px;
+    background:var(--accent-soft);
+  }
+  .cat-card .cat-name{
+    font-family:var(--serif);
+    font-size:18px;
+    font-weight:500;
+    line-height:1.3;
+  }
+  .cat-card .cat-count{
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+  .empty-state{
+    padding:60px 32px;
+    text-align:center;
+    color:var(--ink-soft);
+  }
+  .empty-state h2{
+    font-family:var(--serif);
+    color:var(--ink);
+    font-weight:500;
+    font-size:19px;
+    margin:0 0 8px;
+  }
+  .empty-state p{font-size:14px;line-height:1.6;margin:0;}
+
+  /* ---------- Category detail ---------- */
+  .detail-header{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:20px 20px 14px;
+  }
+  .back-btn{
+    background:none;border:none;color:var(--ink-soft);
+    font-size:22px;line-height:1;padding:4px 6px 4px 0;
+  }
+  .detail-title{
+    font-family:var(--serif);
+    font-size:22px;
+    font-weight:500;
+    flex:1;
+  }
+  .icon-btn{
+    background:none;border:none;color:var(--ink-soft);
+    font-size:20px;padding:4px 8px;
+  }
+  .video-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    padding:6px 20px 20px;
+  }
+  .video-card{
+    background:var(--bg-elevated);
+    border-radius:12px;
+    overflow:hidden;
+    border:1px solid var(--line);
+    animation:settle 0.35s ease;
+  }
+  @keyframes settle{
+    from{opacity:0;transform:scale(0.94);}
+    to{opacity:1;transform:scale(1);}
+  }
+  .thumb-wrap{
+    width:100%;
+    aspect-ratio:4/3;
+    background:var(--bg-elevated-2);
+    position:relative;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .thumb-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+  .thumb-wrap .play-glyph{
+    position:absolute;color:var(--ink);opacity:0.85;font-size:22px;
+  }
+  .video-meta{
+    padding:10px 12px 12px;
+  }
+  .video-name{
+    font-size:13.5px;
+    font-weight:500;
+    line-height:1.35;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+    margin-bottom:6px;
+  }
+  .video-sub{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:11.5px;
+    color:var(--ink-soft);
+  }
+  .dots-btn{
+    background:none;border:none;color:var(--ink-soft);
+    font-size:16px;padding:2px 4px;
+  }
+
+  /* ---------- Floating add button ---------- */
+  .fab{
+    position:fixed;
+    right:calc(50% - 240px + 20px);
+    bottom:28px;
+    width:58px;height:58px;
+    border-radius:50%;
+    background:var(--accent);
+    color:#211D1A;
+    border:none;
+    font-size:28px;
+    font-weight:400;
+    box-shadow:0 8px 22px rgba(0,0,0,0.35);
+    z-index:40;
+  }
+  @media (max-width:519px){
+    .fab{right:20px;}
+  }
+  .fab:active{transform:scale(0.95);}
+
+  /* ---------- Sheets / modals ---------- */
+  .scrim{
+    position:fixed;inset:0;
+    background:rgba(10,8,6,0.55);
+    z-index:50;
+    display:flex;align-items:flex-end;justify-content:center;
+  }
+  .scrim.center{align-items:center;padding:20px;}
+  .sheet{
+    background:var(--bg-elevated);
+    width:100%;
+    max-width:480px;
+    border-radius:20px 20px 0 0;
+    padding:22px 20px calc(24px + env(safe-area-inset-bottom));
+    border-top:1px solid var(--line);
+  }
+  .sheet.card{
+    border-radius:16px;
+    padding:22px;
+  }
+  .sheet h3{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:19px;
+    margin:0 0 16px;
+  }
+  .sheet-list-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    width:100%;
+    background:none;
+    border:none;
+    border-bottom:1px solid var(--line);
+    color:var(--ink);
+    font-size:15px;
+    padding:15px 2px;
+    text-align:left;
+  }
+  .sheet-list-item:last-child{border-bottom:none;}
+  .text-input{
+    width:100%;
+    background:var(--bg-elevated-2);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:13px 14px;
+    color:var(--ink);
+    font-size:15px;
+    margin-bottom:16px;
+  }
+  .text-input:focus{outline:2px solid var(--accent);outline-offset:1px;}
+  .row-gap{display:flex;gap:10px;}
+  .row-gap .btn{flex:1;}
+  .sheet-cancel{
+    display:block;
+    width:100%;
+    text-align:center;
+    background:none;border:none;
+    color:var(--ink-soft);
+    font-size:14px;
+    padding:14px 0 2px;
+  }
+
+  /* ---------- Upload progress dock ---------- */
+  .upload-dock{
+    position:fixed;
+    left:0;right:0;bottom:0;
+    max-width:480px;
+    margin:0 auto;
+    background:var(--bg-elevated);
+    border-top:1px solid var(--line);
+    padding:14px 20px calc(14px + env(safe-area-inset-bottom));
+    z-index:45;
+  }
+  .upload-row{margin-bottom:10px;}
+  .upload-row:last-child{margin-bottom:0;}
+  .upload-row .name{font-size:13px;margin-bottom:6px;color:var(--ink);}
+  .bar-track{
+    height:5px;background:var(--line);border-radius:3px;overflow:hidden;
+  }
+  .bar-fill{
+    height:100%;background:var(--accent);
+    transition:width 0.2s ease;
+  }
+
+  /* ---------- Player ---------- */
+  .player-scrim{
+    position:fixed;inset:0;background:#000;z-index:60;
+    display:flex;flex-direction:column;
+  }
+  .player-close{
+    background:none;border:none;color:#EFE7DA;
+    font-size:16px;padding:18px 20px;align-self:flex-end;
+  }
+  .player-frame{flex:1;border:none;width:100%;}
+
+  .toast{
+    position:fixed;left:50%;bottom:24px;
+    transform:translateX(-50%);
+    background:var(--bg-elevated-2);
+    border:1px solid var(--line);
+    color:var(--ink);
+    padding:12px 18px;
+    border-radius:10px;
+    font-size:13.5px;
+    z-index:80;
+    max-width:calc(100% - 40px);
+    text-align:center;
+  }
+
+  .visually-hidden{
+    position:absolute;width:1px;height:1px;overflow:hidden;
+    clip:rect(0 0 0 0);white-space:nowrap;
+  }
+  ::selection{background:var(--accent-soft);}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* =========================================================================
+   SETUP — read me first
+   -------------------------------------------------------------------------
+   1. Create a Google OAuth "Web application" Client ID (Google Cloud
+      Console → APIs & Services → Credentials) and paste it below.
+   2. Add the URL you host this file at (e.g. https://yourname.github.io)
+      to that Client ID's "Authorized JavaScript origins".
+   3. Enable the "Google Drive API" for that same Google Cloud project.
+   4. While the app is in "Testing" mode on the OAuth consent screen, add
+      your mom's Google email as a Test user (no App Store-style review
+      needed for personal use like this).
+   ========================================================================= */
+const CONFIG = {
+  CLIENT_ID: "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+  SCOPE: "https://www.googleapis.com/auth/drive.file",
+  ROOT_FOLDER_NAME: "Mom's Videos App",
+  APP_TITLE: "Mom's Videos"
+};
+
+const DRIVE = "https://www.googleapis.com/drive/v3";
+const DRIVE_UPLOAD = "https://www.googleapis.com/upload/drive/v3";
+
+let state = {
+  screen: "loading",      // loading | setup | connect | home | category
+  token: null,
+  tokenExpiry: 0,
+  userEmail: null,
+  rootId: null,
+  categories: [],         // {id, name}
+  activeCategory: null,   // {id, name}
+  videos: [],             // for active category
+  uploads: [],            // {id, name, progress, error}
+  statusMessage: "",
+  statusIsError: false,
+};
+
+const $app = document.getElementById("app");
+
+function render(){
+  if(state.screen === "loading") return renderLoading();
+  if(state.screen === "setup") return renderSetup();
+  if(state.screen === "connect") return renderConnect();
+  if(state.screen === "home") return renderHome();
+  if(state.screen === "category") return renderCategory();
+}
+
+/* ---------------- Loading / setup guard ---------------- */
+function renderLoading(){
+  $app.innerHTML = `<div class="hero"><p>Opening ${esc(CONFIG.APP_TITLE)}…</p></div>`;
+}
+
+function renderSetup(){
+  $app.innerHTML = `
+    <div class="hero">
+      <div class="hero-ring"></div>
+      <h1>Almost there</h1>
+      <p style="max-width:340px">
+        This app hasn't been connected to a Google account yet. Whoever set
+        this up needs to add a Google Client ID inside the file
+        (look for <code>CONFIG.CLIENT_ID</code> near the top).
+      </p>
+    </div>`;
+}
+
+/* ---------------- Connect screen ---------------- */
+function renderConnect(){
+  $app.innerHTML = `
+    <div class="hero">
+      <div class="hero-ring"></div>
+      <h1>${esc(CONFIG.APP_TITLE)}</h1>
+      <p>Upload your videos here and they go straight into your own
+      Google Drive, sorted into folders you choose. Nothing stays on
+      your phone.</p>
+      <button class="btn" id="connectBtn">Connect Google Drive</button>
+      <div class="status-line ${state.statusIsError ? "error" : ""}">${esc(state.statusMessage)}</div>
+    </div>`;
+  document.getElementById("connectBtn").onclick = connect;
+}
+
+/* ---------------- Top bar (shared) ---------------- */
+function topbarHtml(){
+  return `
+    <div class="topbar">
+      <div class="wordmark">${esc(CONFIG.APP_TITLE)}</div>
+      <button class="account-chip" id="acctBtn">${esc(state.userEmail || "")}</button>
+    </div>`;
+}
+function bindTopbar(){
+  const b = document.getElementById("acctBtn");
+  if(b) b.onclick = () => openSheet(accountSheet());
+}
+
+/* ---------------- Home: category grid ---------------- */
+function renderHome(){
+  let body;
+  if(state.categories.length === 0){
+    body = `
+      <div class="empty-state">
+        <h2>No folders yet</h2>
+        <p>Tap the + button to create your first folder and upload a video.</p>
+      </div>`;
+  }else{
+    body = `<div class="cat-grid">${state.categories.map(catCardHtml).join("")}</div>`;
+  }
+
+  $app.innerHTML = `
+    ${topbarHtml()}
+    ${body}
+    ${uploadDockHtml()}
+    <button class="fab" id="fabBtn" aria-label="Add video">+</button>
+  `;
+  bindTopbar();
+  document.getElementById("fabBtn").onclick = () => openSheet(addVideoSheet());
+  state.categories.forEach(c=>{
+    const el = document.getElementById("cat-"+c.id);
+    if(el) el.onclick = () => openCategory(c);
+  });
+}
+
+function catCardHtml(c){
+  const count = c.videoCount != null ? `${c.videoCount} video${c.videoCount===1?"":"s"}` : "";
+  return `
+    <button class="cat-card" id="cat-${c.id}">
+      <div class="cat-name">${esc(c.name)}</div>
+      <div class="cat-count">${count}</div>
+    </button>`;
+}
+
+/* ---------------- Category detail ---------------- */
+function renderCategory(){
+  const c = state.activeCategory;
+  let grid;
+  if(state.videos.length === 0){
+    grid = `
+      <div class="empty-state">
+        <h2>No videos here yet</h2>
+        <p>Tap the + button to upload one into "${esc(c.name)}".</p>
+      </div>`;
+  }else{
+    grid = `<div class="video-grid">${state.videos.map(videoCardHtml).join("")}</div>`;
+  }
+
+  $app.innerHTML = `
+    <div class="detail-header">
+      <button class="back-btn" id="backBtn">‹</button>
+      <div class="detail-title">${esc(c.name)}</div>
+      <button class="icon-btn" id="catMenuBtn">⋯</button>
+    </div>
+    ${grid}
+    ${uploadDockHtml()}
+    <button class="fab" id="fabBtn" aria-label="Add video">+</button>
+  `;
+  document.getElementById("backBtn").onclick = () => { state.screen="home"; render(); refreshCategoryCounts(); };
+  document.getElementById("catMenuBtn").onclick = () => openSheet(categoryMenuSheet(c));
+  document.getElementById("fabBtn").onclick = () => triggerFileUpload(c.id);
+  state.videos.forEach(v=>{
+    const card = document.getElementById("vid-"+v.id);
+    if(card) card.querySelector(".thumb-wrap").onclick = () => openPlayer(v);
+    const dots = document.getElementById("dots-"+v.id);
+    if(dots) dots.onclick = (e) => { e.stopPropagation(); openSheet(videoMenuSheet(v)); };
+  });
+}
+
+function videoCardHtml(v){
+  const dur = formatDuration(v.videoMediaMetadata && v.videoMediaMetadata.durationMillis);
+  const thumb = v.thumbnailLink
+    ? `<img src="${v.thumbnailLink}" alt="">`
+    : `<span class="play-glyph">▶</span>`;
+  return `
+    <div class="video-card" id="vid-${v.id}">
+      <div class="thumb-wrap">${thumb}${v.thumbnailLink ? '<span class="play-glyph">▶</span>' : ''}</div>
+      <div class="video-meta">
+        <div class="video-name">${esc(v.name)}</div>
+        <div class="video-sub">
+          <span>${dur}</span>
+          <button class="dots-btn" id="dots-${v.id}">⋯</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function formatDuration(ms){
+  if(!ms) return "";
+  const s = Math.round(ms/1000);
+  const m = Math.floor(s/60);
+  const r = s%60;
+  return `${m}:${r.toString().padStart(2,"0")}`;
+}
+
+/* ---------------- Upload dock ---------------- */
+function uploadDockHtml(){
+  if(state.uploads.length === 0) return "";
+  return `
+    <div class="upload-dock">
+      ${state.uploads.map(u => `
+        <div class="upload-row">
+          <div class="name">${u.error ? "Couldn't upload — " : "Uploading "} ${esc(u.name)}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${u.error ? 100 : u.progress}%;background:${u.error ? 'var(--danger)' : 'var(--accent)'}"></div></div>
+        </div>
+      `).join("")}
+    </div>`;
+}
+
+/* ---------------- Sheets ---------------- */
+function openSheet(html, opts={}){
+  closeSheet();
+  const scrim = document.createElement("div");
+  scrim.className = "scrim" + (opts.center ? " center" : "");
+  scrim.id = "activeScrim";
+  scrim.innerHTML = html;
+  scrim.addEventListener("click", (e)=>{ if(e.target === scrim) closeSheet(); });
+  document.body.appendChild(scrim);
+}
+function closeSheet(){
+  const s = document.getElementById("activeScrim");
+  if(s) s.remove();
+}
+
+function accountSheet(){
+  return `
+    <div class="sheet">
+      <h3>Account</h3>
+      <button class="sheet-list-item" id="disconnectBtn">Disconnect Google Drive</button>
+      <button class="sheet-cancel" onclick="closeSheet()">Close</button>
+    </div>
+    ${afterMount(()=>{
+      document.getElementById("disconnectBtn").onclick = disconnect;
+    })}`;
+}
+
+function addVideoSheet(){
+  const listHtml = state.categories.map(c => `
+    <button class="sheet-list-item" data-cat="${c.id}">${esc(c.name)}<span style="color:var(--ink-soft)">›</span></button>
+  `).join("");
+  return `
+    <div class="sheet">
+      <h3>Add a video to…</h3>
+      ${listHtml || `<p style="color:var(--ink-soft);font-size:14px;margin:0 0 14px">No folders yet — create one first.</p>`}
+      <button class="sheet-list-item" id="newCatFromUpload"><span style="color:var(--accent)">+ New folder</span></button>
+      <button class="sheet-cancel" onclick="closeSheet()">Cancel</button>
+    </div>
+    ${afterMount(()=>{
+      document.querySelectorAll("[data-cat]").forEach(btn=>{
+        btn.onclick = ()=>{
+          const catId = btn.getAttribute("data-cat");
+          closeSheet();
+          triggerFileUpload(catId);
+        };
+      });
+      document.getElementById("newCatFromUpload").onclick = ()=>{
+        openSheet(newCategorySheet((newCat)=>{
+          triggerFileUpload(newCat.id);
+        }));
+      };
+    })}`;
+}
+
+// Creates a one-off file input and opens the native picker immediately.
+function triggerFileUpload(categoryId){
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "video/*";
+  input.className = "visually-hidden";
+  document.body.appendChild(input);
+  input.onchange = ()=>{
+    if(input.files && input.files[0]){
+      startUpload(input.files[0], categoryId);
+    }
+    input.remove();
+  };
+  input.click();
+}
+
+function newCategorySheet(onCreated){
+  return `
+    <div class="scrim center" style="position:static">
+      <div class="sheet card" style="margin:0 auto">
+        <h3>New folder</h3>
+        <input class="text-input" id="newCatInput" placeholder="e.g. Grandkids, Trips, Recipes" autofocus>
+        <div class="row-gap">
+          <button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>
+          <button class="btn" id="createCatBtn">Create</button>
+        </div>
+      </div>
+    </div>
+    ${afterMount(()=>{
+      const inp = document.getElementById("newCatInput");
+      inp.focus();
+      document.getElementById("createCatBtn").onclick = async ()=>{
+        const name = inp.value.trim();
+        if(!name) return;
+        closeSheet();
+        setStatus("Creating folder…");
+        try{
+          const cat = await createCategory(name);
+          state.categories.push({...cat, videoCount:0});
+          setStatus("");
+          render();
+          if(onCreated) onCreated(cat);
+        }catch(e){ toast("Couldn't create the folder. Try again."); }
+      };
+    })}`;
+}
+
+function categoryMenuSheet(c){
+  return `
+    <div class="sheet">
+      <h3>${esc(c.name)}</h3>
+      <button class="sheet-list-item" id="renameCatBtn">Rename folder</button>
+      <button class="sheet-list-item" id="deleteCatBtn" style="color:var(--danger)">Delete folder</button>
+      <button class="sheet-cancel" onclick="closeSheet()">Cancel</button>
+    </div>
+    ${afterMount(()=>{
+      document.getElementById("renameCatBtn").onclick = ()=> openSheet(renameCategorySheet(c));
+      document.getElementById("deleteCatBtn").onclick = async ()=>{
+        closeSheet();
+        if(!confirm(`Delete "${c.name}"? Videos inside will be moved to Drive's trash.`)) return;
+        await trashFile(c.id);
+        state.categories = state.categories.filter(x=>x.id!==c.id);
+        state.screen = "home";
+        render();
+      };
+    })}`;
+}
+
+function renameCategorySheet(c){
+  return `
+    <div class="scrim center" style="position:static">
+      <div class="sheet card" style="margin:0 auto">
+        <h3>Rename folder</h3>
+        <input class="text-input" id="renameInput" value="${esc(c.name)}">
+        <div class="row-gap">
+          <button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>
+          <button class="btn" id="saveRenameBtn">Save</button>
+        </div>
+      </div>
+    </div>
+    ${afterMount(()=>{
+      const inp = document.getElementById("renameInput");
+      inp.focus();
+      document.getElementById("saveRenameBtn").onclick = async ()=>{
+        const name = inp.value.trim();
+        if(!name) return;
+        closeSheet();
+        await renameFile(c.id, name);
+        c.name = name;
+        if(state.activeCategory && state.activeCategory.id === c.id) state.activeCategory.name = name;
+        render();
+      };
+    })}`;
+}
+
+function videoMenuSheet(v){
+  const otherCats = state.categories.filter(c=>c.id !== state.activeCategory.id);
+  return `
+    <div class="sheet">
+      <h3>${esc(v.name)}</h3>
+      <button class="sheet-list-item" id="renameVidBtn">Rename video</button>
+      ${otherCats.length ? `<button class="sheet-list-item" id="moveVidBtn">Move to another folder</button>` : ""}
+      <button class="sheet-list-item" id="deleteVidBtn" style="color:var(--danger)">Delete video</button>
+      <button class="sheet-cancel" onclick="closeSheet()">Cancel</button>
+    </div>
+    ${afterMount(()=>{
+      document.getElementById("renameVidBtn").onclick = ()=> openSheet(renameVideoSheet(v));
+      if(otherCats.length){
+        document.getElementById("moveVidBtn").onclick = ()=> openSheet(moveVideoSheet(v, otherCats));
+      }
+      document.getElementById("deleteVidBtn").onclick = async ()=>{
+        closeSheet();
+        if(!confirm(`Delete "${v.name}"? It'll go to Drive's trash.`)) return;
+        await trashFile(v.id);
+        state.videos = state.videos.filter(x=>x.id!==v.id);
+        render();
+      };
+    })}`;
+}
+
+function renameVideoSheet(v){
+  return `
+    <div class="scrim center" style="position:static">
+      <div class="sheet card" style="margin:0 auto">
+        <h3>Rename video</h3>
+        <input class="text-input" id="renameVidInput" value="${esc(v.name)}">
+        <div class="row-gap">
+          <button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>
+          <button class="btn" id="saveVidRenameBtn">Save</button>
+        </div>
+      </div>
+    </div>
+    ${afterMount(()=>{
+      const inp = document.getElementById("renameVidInput");
+      inp.focus();
+      document.getElementById("saveVidRenameBtn").onclick = async ()=>{
+        const name = inp.value.trim();
+        if(!name) return;
+        closeSheet();
+        await renameFile(v.id, name);
+        v.name = name;
+        render();
+      };
+    })}`;
+}
+
+function moveVideoSheet(v, otherCats){
+  return `
+    <div class="sheet">
+      <h3>Move "${esc(v.name)}" to…</h3>
+      ${otherCats.map(c=>`<button class="sheet-list-item" data-move="${c.id}">${esc(c.name)}</button>`).join("")}
+      <button class="sheet-cancel" onclick="closeSheet()">Cancel</button>
+    </div>
+    ${afterMount(()=>{
+      document.querySelectorAll("[data-move]").forEach(btn=>{
+        btn.onclick = async ()=>{
+          const newId = btn.getAttribute("data-move");
+          closeSheet();
+          await moveFile(v.id, state.activeCategory.id, newId);
+          state.videos = state.videos.filter(x=>x.id!==v.id);
+          render();
+        };
+      });
+    })}`;
+}
+
+// tiny helper: run a script tag's worth of JS right after innerHTML mounts
+function afterMount(fn){
+  requestAnimationFrame(fn);
+  return "";
+}
+
+/* ---------------- Player ---------------- */
+function openPlayer(v){
+  const scrim = document.createElement("div");
+  scrim.className = "player-scrim";
+  scrim.innerHTML = `
+    <button class="player-close" id="closePlayerBtn">Close ✕</button>
+    <iframe class="player-frame" src="https://drive.google.com/file/d/${v.id}/preview" allow="autoplay; fullscreen"></iframe>
+  `;
+  document.body.appendChild(scrim);
+  document.getElementById("closePlayerBtn").onclick = ()=> scrim.remove();
+}
+
+/* ---------------- Toast / status ---------------- */
+function toast(msg){
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(()=> t.remove(), 3200);
+}
+function setStatus(msg, isError=false){
+  state.statusMessage = msg;
+  state.statusIsError = isError;
+  if(state.screen === "connect") render();
+}
+
+/* ---------------- Auth ---------------- */
+let tokenClient = null;
+
+function initAuth(){
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: CONFIG.CLIENT_ID,
+    scope: CONFIG.SCOPE,
+    callback: async (resp)=>{
+      if(resp.error){
+        setStatus("Sign-in didn't go through. Please try again.", true);
+        return;
+      }
+      state.token = resp.access_token;
+      state.tokenExpiry = Date.now() + (resp.expires_in*1000);
+      sessionStorage.setItem("mv_token", state.token);
+      sessionStorage.setItem("mv_token_expiry", state.tokenExpiry);
+      await afterSignIn();
+    }
+  });
+
+  const savedToken = sessionStorage.getItem("mv_token");
+  const savedExpiry = Number(sessionStorage.getItem("mv_token_expiry") || 0);
+  if(savedToken && savedExpiry > Date.now() + 60000){
+    state.token = savedToken;
+    state.tokenExpiry = savedExpiry;
+    afterSignIn();
+  } else {
+    state.screen = "connect";
+    render();
+  }
+}
+
+function connect(){
+  setStatus("Opening Google sign-in…");
+  tokenClient.requestAccessToken({ prompt: "consent" });
+}
+
+function disconnect(){
+  closeSheet();
+  sessionStorage.removeItem("mv_token");
+  sessionStorage.removeItem("mv_token_expiry");
+  if(state.token) google.accounts.oauth2.revoke(state.token, ()=>{});
+  state = { ...state, screen:"connect", token:null, userEmail:null, categories:[], videos:[] };
+  render();
+}
+
+async function afterSignIn(){
+  setStatus("Setting things up…");
+  try{
+    const me = await apiFetch(`https://www.googleapis.com/oauth2/v3/userinfo`);
+    state.userEmail = me.email || "";
+    state.rootId = await ensureRootFolder();
+    state.categories = await listCategories(state.rootId);
+    state.screen = "home";
+    render();
+  }catch(e){
+    console.error(e);
+    setStatus("Couldn't connect just now. Please try again.", true);
+    state.screen = "connect";
+    render();
+  }
+}
+
+/* ---------------- Drive helpers ---------------- */
+async function apiFetch(url, options={}){
+  const res = await fetch(url, {
+    ...options,
+    headers:{
+      "Authorization": `Bearer ${state.token}`,
+      ...(options.headers || {})
+    }
+  });
+  if(res.status === 401){
+    // token expired mid-session
+    sessionStorage.removeItem("mv_token");
+    state.screen = "connect";
+    setStatus("Please sign in again.", true);
+    render();
+    throw new Error("Unauthorized");
+  }
+  if(!res.ok){
+    const t = await res.text().catch(()=> "");
+    throw new Error(`Drive API error ${res.status}: ${t}`);
+  }
+  if(res.status === 204) return null;
+  return res.json();
+}
+
+async function ensureRootFolder(){
+  const q = encodeURIComponent(`name='${CONFIG.ROOT_FOLDER_NAME.replace(/'/g,"\\'")}' and mimeType='application/vnd.google-apps.folder' and trashed=false`);
+  const data = await apiFetch(`${DRIVE}/files?q=${q}&fields=files(id,name)&spaces=drive`);
+  if(data.files && data.files.length) return data.files[0].id;
+  const created = await apiFetch(`${DRIVE}/files?fields=id`, {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ name: CONFIG.ROOT_FOLDER_NAME, mimeType:"application/vnd.google-apps.folder" })
+  });
+  return created.id;
+}
+
+async function listCategories(rootId){
+  const q = encodeURIComponent(`'${rootId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`);
+  const data = await apiFetch(`${DRIVE}/files?q=${q}&fields=files(id,name)&orderBy=name&pageSize=200`);
+  const cats = data.files || [];
+  // fetch counts (best-effort, sequential to keep it simple)
+  for(const c of cats){
+    try{
+      const cq = encodeURIComponent(`'${c.id}' in parents and trashed=false`);
+      const cd = await apiFetch(`${DRIVE}/files?q=${cq}&fields=files(id)&pageSize=1000`);
+      c.videoCount = (cd.files || []).length;
+    }catch(e){ c.videoCount = null; }
+  }
+  return cats;
+}
+
+async function createCategory(name){
+  const created = await apiFetch(`${DRIVE}/files?fields=id,name`, {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ name, mimeType:"application/vnd.google-apps.folder", parents:[state.rootId] })
+  });
+  return created;
+}
+
+async function listVideos(categoryId){
+  const q = encodeURIComponent(`'${categoryId}' in parents and trashed=false`);
+  const fields = encodeURIComponent("files(id,name,thumbnailLink,createdTime,videoMediaMetadata,mimeType)");
+  const data = await apiFetch(`${DRIVE}/files?q=${q}&fields=${fields}&orderBy=createdTime desc&pageSize=500`);
+  return data.files || [];
+}
+
+async function renameFile(fileId, newName){
+  return apiFetch(`${DRIVE}/files/${fileId}?fields=id,name`, {
+    method:"PATCH",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ name:newName })
+  });
+}
+
+async function trashFile(fileId){
+  return apiFetch(`${DRIVE}/files/${fileId}?fields=id`, {
+    method:"PATCH",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ trashed:true })
+  });
+}
+
+async function moveFile(fileId, fromId, toId){
+  return apiFetch(`${DRIVE}/files/${fileId}?addParents=${toId}&removeParents=${fromId}&fields=id,parents`, {
+    method:"PATCH"
+  });
+}
+
+function openCategory(c){
+  state.activeCategory = c;
+  state.videos = [];
+  state.screen = "category";
+  render();
+  listVideos(c.id).then(vids=>{
+    state.videos = vids;
+    if(state.screen === "category") render();
+  }).catch(()=> toast("Couldn't load videos for this folder."));
+}
+
+async function refreshCategoryCounts(){
+  try{
+    state.categories = await listCategories(state.rootId);
+    if(state.screen === "home") render();
+  }catch(e){ /* silent */ }
+}
+
+/* ---------------- Upload (resumable) ---------------- */
+function startUpload(file, categoryId){
+  const uploadState = { id: cryptoId(), name: file.name, progress: 0, error:false };
+  state.uploads.push(uploadState);
+  render();
+
+  fetch(`${DRIVE_UPLOAD}/files?uploadType=resumable&fields=id,name,thumbnailLink,videoMediaMetadata`, {
+    method:"POST",
+    headers:{
+      "Authorization": `Bearer ${state.token}`,
+      "Content-Type":"application/json; charset=UTF-8",
+      "X-Upload-Content-Type": file.type || "video/mp4",
+      "X-Upload-Content-Length": file.size
+    },
+    body: JSON.stringify({ name:file.name, parents:[categoryId] })
+  }).then(res=>{
+    if(!res.ok) throw new Error("Couldn't start upload");
+    const location = res.headers.get("Location");
+    if(!location) throw new Error("No upload URL returned");
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", location, true);
+    xhr.setRequestHeader("Content-Type", file.type || "video/mp4");
+    xhr.upload.onprogress = (e)=>{
+      if(e.lengthComputable){
+        uploadState.progress = Math.round((e.loaded/e.total)*100);
+        render();
+      }
+    };
+    xhr.onload = ()=>{
+      state.uploads = state.uploads.filter(u=>u.id !== uploadState.id);
+      if(xhr.status >= 200 && xhr.status < 300){
+        toast("Video uploaded.");
+        if(state.activeCategory && state.activeCategory.id === categoryId){
+          listVideos(categoryId).then(v=>{ state.videos = v; render(); });
+        }
+        refreshCategoryCounts();
+      } else {
+        toast("That upload didn't finish. Please try again.");
+        render();
+      }
+    };
+    xhr.onerror = ()=>{
+      state.uploads = state.uploads.filter(u=>u.id !== uploadState.id);
+      toast("That upload didn't finish. Check your connection and try again.");
+      render();
+    };
+    xhr.send(file);
+  }).catch(e=>{
+    console.error(e);
+    uploadState.error = true;
+    render();
+    setTimeout(()=>{
+      state.uploads = state.uploads.filter(u=>u.id !== uploadState.id);
+      render();
+    }, 2500);
+  });
+}
+
+/* ---------------- utils ---------------- */
+function esc(s){
+  return String(s ?? "").replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[m]));
+}
+function cryptoId(){
+  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+}
+
+/* ---------------- boot ---------------- */
+window.onload = ()=>{
+  if(!CONFIG.CLIENT_ID || CONFIG.CLIENT_ID.indexOf("YOUR_GOOGLE_CLIENT_ID") === 0){
+    state.screen = "setup";
+    render();
+    return;
+  }
+  // wait for the Google Identity script to be ready
+  const waitForGoogle = setInterval(()=>{
+    if(window.google && google.accounts && google.accounts.oauth2){
+      clearInterval(waitForGoogle);
+      initAuth();
+    }
+  }, 100);
+};
+</script>
+</body>
+</html>
